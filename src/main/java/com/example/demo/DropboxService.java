@@ -4,6 +4,8 @@ import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.users.FullAccount;
+import com.example.domain.HasAttachments;
+import com.example.domain.TelegramMessage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -24,20 +26,27 @@ public class DropboxService {
     @Value("${dropbox.dataFolder}")
     private String dataFolderName;
 
-    public String getFileName(String path) {
-        return path.substring(path.lastIndexOf("/")+1);
+
+    public String uploadAttachment(TelegramMessage telegramMessage) throws Exception {
+        return null;
     }
+    public String uploadAttachment(HasAttachments telegramMessage) throws Exception {
 
-    public String uploadFile(File file, String path) throws Exception {
-        var resultFilePath = String.format("%s/%s",dataFolderName,path);
-        try {
-            FileMetadata metadata = client.files().uploadBuilder(resultFilePath)
-                .uploadAndFinish(new FileInputStream(file));
+        if (telegramMessage.getAttachment() != null){
+            var resultFilePath = String.format("%s/%s",dataFolderName,telegramMessage.getAttachment().getName());
+            try {
+                FileMetadata metadata = client.files().uploadBuilder(resultFilePath)
+                    .uploadAndFinish(new FileInputStream(telegramMessage.getAttachment()));
 
-        } catch (Exception e) {
-            e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return resultFilePath;
         }
-        return resultFilePath;
+        else{
+            return null;
+        }
+
     }
 
     public String uploadTextFile(String content) {
@@ -58,7 +67,7 @@ public class DropboxService {
         return String.format("%s.md",dateValue);
     }
 
-    public File appendLinkToEndOfFile(String fileName, String link) {
+    public File appendLinkToEndOfFile(TelegramMessage fileName, String link) {
         try {
             File tempFile = File.createTempFile("123", "", null);
             FileOutputStream fos = new FileOutputStream(tempFile);

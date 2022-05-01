@@ -6,10 +6,10 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 
 @AllArgsConstructor
 public abstract class TelegramMessage {
-    public abstract File getAttachment();
+    protected Message message;
 
-    public abstract String getText();
-
-    private Message message;
+    public String getText() {
+        return message.getText();
+    }
 
 }
