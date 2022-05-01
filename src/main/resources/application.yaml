@@ -1,0 +1,9 @@
+bot:
+  token: "${BOT_TOKEN}"
+  name: generator_bot
+dropbox:
+  token: "${DROPBOX_TOKEN}"
+  folder: "${DROPBOX_FOLDER}"
+  dataFolder: "${DROPBOX_DATA_FOLDER}"
+server:
+  port: 8080
