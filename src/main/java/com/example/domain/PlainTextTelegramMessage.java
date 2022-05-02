@@ -1,6 +1,5 @@
 package com.example.domain;
 
-import java.io.File;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 public class PlainTextTelegramMessage extends TelegramMessage{
@@ -11,6 +10,13 @@ public class PlainTextTelegramMessage extends TelegramMessage{
 
     @Override
     public String getText() {
+        return message.getText();
+    }
+
+    @Override
+    public String getFileId() {
         return null;
     }
+
+
 }

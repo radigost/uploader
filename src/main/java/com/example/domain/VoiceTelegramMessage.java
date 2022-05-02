@@ -1,7 +1,5 @@
 package com.example.domain;
 
-import java.io.File;
-import org.telegram.telegrambots.meta.api.methods.GetFile;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 public class VoiceTelegramMessage extends TelegramMessage implements HasAttachments {
@@ -10,13 +8,8 @@ public class VoiceTelegramMessage extends TelegramMessage implements HasAttachme
     }
 
     @Override
-    public File getAttachment() {
-        GetFile getFileMethod = new GetFile();
-        getFileMethod.setFileId(message.getVoice().getFileId());
-
-        var telegramFile  = execute(getFileMethod);
-        var file = this.downloadFile(telegramFile.getFilePath());
-        return null;
+    public String getFileId() {
+        return message.getVoice().getFileId();
     }
 
     @Override
@@ -24,8 +17,6 @@ public class VoiceTelegramMessage extends TelegramMessage implements HasAttachme
         return "";
     }
 
-    private String getFileName(String path) {
-        return path.substring(path.lastIndexOf("/")+1);
-    }
+
 
 }

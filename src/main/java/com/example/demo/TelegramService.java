@@ -1,14 +1,19 @@
 package com.example.demo;
 
-import lombok.SneakyThrows;
+import java.io.File;
+import java.util.Optional;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.GetFile;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Component
+@Log4j2
 public class TelegramService extends TelegramLongPollingBot {
     @Value("${bot.name}")
     private String botUsername;
@@ -25,25 +30,37 @@ public class TelegramService extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         try {
+
             var chatId = update.getMessage().getChatId().toString();
-            var telegramMessage =  messageFactory.createMessage(update.getMessage());
+            var telegramMessage = messageFactory.createMessage(update.getMessage());
 
-            var filename = dropboxService.uploadAttachment(telegramMessage);
-            if (filename != null){
-                postMessage(chatId,String.format("File %s is uploaded", filename));
-                dropboxService.appendLinkToEndOfFile(telegramMessage,filename);
+            String filename = null;
+            if (telegramMessage.getFileId() != null) {
+                GetFile getFileMethod = new GetFile();
+                getFileMethod.setFileId(telegramMessage.getFileId());
+                var attachment = execute(getFileMethod);
+                var file = downloadFile(attachment.getFilePath());
+                filename = dropboxService.uploadFileToDataFolder(file, attachment.getFilePath());
+                var result = String.format("File %s is uploaded", filename);
+                log.info(result);
+                postMessage(chatId, result);
             }
-            var uploadedPath = dropboxService.uploadTextFile(telegramMessage.getText());
-            postMessage(chatId,String.format("File %s is created", uploadedPath));
+            String text = Optional.ofNullable(telegramMessage.getText()).orElse(" ");
 
-
+            if (filename != null) {
+                text = text + String.format("[[%s]]", filename);
+            }
+            var uploadedPath = dropboxService.uploadTextFile(text);
+            var result = String.format("File %s is created", uploadedPath);
+            log.info(result);
+            postMessage(chatId, result);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    @SneakyThrows
-    private void postMessage(String chatId, String text){
+
+    private void postMessage(String chatId, String text) throws TelegramApiException {
         var message = new SendMessage();
         message.setChatId(chatId);
         message.setText(text);
