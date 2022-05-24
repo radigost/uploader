@@ -2,8 +2,9 @@ bot:
   token: "${BOT_TOKEN}"
   name: generator_bot
 dropbox:
-  token: "${DROPBOX_TOKEN}"
   folder: "${DROPBOX_FOLDER}"
   dataFolder: "${DROPBOX_DATA_FOLDER}"
+  appKey: "${DROPBOX_APP_KEY}"
+  appSecret:  "${DROPBOX_APP_SECRET}"
 server:
   port: 8080

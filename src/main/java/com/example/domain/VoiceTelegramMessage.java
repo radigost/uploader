@@ -14,7 +14,7 @@ public class VoiceTelegramMessage extends TelegramMessage implements HasAttachme
 
     @Override
     public String getText() {
-        return "";
+        return null;
     }
 
 

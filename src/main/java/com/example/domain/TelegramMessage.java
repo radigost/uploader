@@ -9,6 +9,7 @@ public abstract class TelegramMessage {
 
     abstract public String getText();
 
+    // TODO check if message can contain several files (probably not)
     public abstract String getFileId();
 
 }
